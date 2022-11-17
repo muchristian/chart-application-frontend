@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { useAuth } from "../../contexts/AuthContext";
+import { loginUser } from "../../services/UserService";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -22,12 +23,11 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      setError("");
       setLoading(true);
-      await login(email, password);
+      await loginUser({ email, password });
       navigate("/");
     } catch (e) {
-      setError("Failed to login");
+      console.log(e);
     }
 
     setLoading(false);
@@ -121,7 +121,7 @@ export default function Login() {
           >
             Sign In
           </button>
-          {/* <div class="mt-4 text-center text-xs+">
+          <div class="mt-4 text-center text-xs+">
             <p class="line-clamp-1">
               <span>Dont have Account? </span>
 
@@ -132,7 +132,7 @@ export default function Login() {
                 Create account
               </Link>
             </p>
-          </div> */}
+          </div>
         </form>
       </div>
     </div>

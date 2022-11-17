@@ -5,6 +5,7 @@ import { getMessagesOfChatRoom, sendMessage } from "../../services/ChatService";
 import Message from "./Message";
 import Contact from "./Contact";
 import ChatForm from "./ChatForm";
+import MessageItem from "../messageItem/MessageItem";
 
 export default function ChatRoom({ currentChat, currentUser, socket }) {
   const [messages, setMessages] = useState([]);
@@ -61,24 +62,24 @@ export default function ChatRoom({ currentChat, currentUser, socket }) {
   };
 
   return (
-    <div className="lg:col-span-2 lg:block">
+    <>
+      {/* <div className="lg:col-span-2 lg:block">
       <div className="w-full">
         <div className="p-3 bg-white border-b border-gray-200 dark:bg-gray-900 dark:border-gray-700">
           <Contact chatRoom={currentChat} currentUser={currentUser} />
-        </div>
+        </div> */}
 
-        <div className="relative w-full p-6 overflow-y-auto h-[30rem] bg-white border-b border-gray-200 dark:bg-gray-900 dark:border-gray-700">
-          <ul className="space-y-2">
-            {messages.map((message, index) => (
-              <div key={index} ref={scrollRef}>
-                <Message message={message} self={currentUser.uid} />
-              </div>
-            ))}
-          </ul>
+      <div className="grow overflow-y-auto px-4 py-4 bg-gray-50 transition-all duration-[.25s] scrollbar-sm">
+        <div className="space-y-5">
+          {messages.map((message, index) => (
+            <div key={index} ref={scrollRef}>
+              <MessageItem message={message} self={currentUser.uid} />
+            </div>
+          ))}
         </div>
-
-        <ChatForm handleFormSubmit={handleFormSubmit} />
       </div>
-    </div>
+
+      <ChatForm handleFormSubmit={handleFormSubmit} />
+    </>
   );
 }

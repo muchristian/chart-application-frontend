@@ -7,8 +7,12 @@ import {
 } from "firebase/auth";
 
 import auth from "../config/firebase";
+import TokenService from "../services/TokenService";
+import jwtDecode from "jwt-decode";
 
-const AuthContext = createContext();
+export const AuthContext = createContext({
+  currentUser: "ddddd",
+});
 
 export function useAuth() {
   return useContext(AuthContext);
@@ -19,39 +23,24 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  function register(email, password) {
-    return createUserWithEmailAndPassword(auth, email, password);
-  }
-
-  function login(email, password) {
-    return signInWithEmailAndPassword(auth, email, password);
-  }
-
-  function logout() {
-    return signOut(auth);
-  }
-
-  function updateUserProfile(user, profile) {
-    return updateProfile(user, profile);
-  }
-
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setCurrentUser(user);
+  function isLoggedIn() {
+    const token = TokenService.getAccessToken();
+    console.log(token);
+    if (token) {
+      const result = jwtDecode(token);
+      console.log(result);
       setLoading(false);
-    });
-
-    return unsubscribe;
+      console.log(result);
+      setCurrentUser(result);
+    }
+    setLoading(false);
+  }
+  useEffect(() => {
+    isLoggedIn();
   }, []);
-
+  console.log(currentUser);
   const value = {
     currentUser,
-    error,
-    setError,
-    login,
-    register,
-    logout,
-    updateUserProfile,
   };
 
   return (

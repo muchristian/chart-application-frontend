@@ -2,17 +2,18 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { useAuth } from "../../contexts/AuthContext";
-import { createUser } from "../../services/ChatService";
+import { createUser } from "../../services/UserService";
 
 export default function Register() {
   const navigate = useNavigate();
-  const [username, setUsername] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const { currentUser, register, setError } = useAuth();
+  const { currentUser } = useAuth();
 
   useEffect(() => {
     if (currentUser) {
@@ -22,19 +23,12 @@ export default function Register() {
 
   async function handleFormSubmit(e) {
     e.preventDefault();
-
-    if (password !== confirmPassword) {
-      return setError("Passwords do not match");
-    }
-
     try {
-      setError("");
       setLoading(true);
-      await register(email, password);
-      await createUser({ username, email });
-      navigate("/");
+      await createUser({ firstName, lastName, email, password });
+      await navigate("/login");
     } catch (e) {
-      setError("Failed to register");
+      console.log(e);
     }
 
     setLoading(false);
@@ -61,12 +55,12 @@ export default function Register() {
           <label class="relative flex">
             <input
               class="form-input peer w-full rounded-lg border border-slate-300 bg-transparent px-3 py-2 pl-9 placeholder:text-slate-400/70 hover:z-10 hover:border-slate-400 focus:z-10 focus:border-primary dark:border-navy-450 dark:hover:border-navy-400 dark:focus:border-accent"
-              placeholder="Username"
-              name="username"
+              placeholder="Firstname"
+              name="firstname"
               type="text"
-              autoComplete="username"
+              autoComplete="firstname"
               required
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(e) => setFirstName(e.target.value)}
             />
             <span class="pointer-events-none absolute flex h-full w-10 items-center justify-center text-slate-400 peer-focus:text-primary dark:text-navy-300 dark:peer-focus:text-accent">
               <svg
@@ -89,7 +83,35 @@ export default function Register() {
           <label class="relative mt-4 flex">
             <input
               class="form-input peer w-full rounded-lg border border-slate-300 bg-transparent px-3 py-2 pl-9 placeholder:text-slate-400/70 hover:z-10 hover:border-slate-400 focus:z-10 focus:border-primary dark:border-navy-450 dark:hover:border-navy-400 dark:focus:border-accent"
-              placeholder="Username"
+              placeholder="Lastname"
+              name="lastname"
+              type="text"
+              autoComplete="lastname"
+              required
+              onChange={(e) => setLastName(e.target.value)}
+            />
+            <span class="pointer-events-none absolute flex h-full w-10 items-center justify-center text-slate-400 peer-focus:text-primary dark:text-navy-300 dark:peer-focus:text-accent">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 transition-colors duration-200"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
+                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                ></path>
+              </svg>
+            </span>
+          </label>
+
+          <label class="relative mt-4 flex">
+            <input
+              class="form-input peer w-full rounded-lg border border-slate-300 bg-transparent px-3 py-2 pl-9 placeholder:text-slate-400/70 hover:z-10 hover:border-slate-400 focus:z-10 focus:border-primary dark:border-navy-450 dark:hover:border-navy-400 dark:focus:border-accent"
+              placeholder="Email"
               name="email"
               type="email"
               autoComplete="email"

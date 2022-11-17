@@ -1,9 +1,16 @@
 import { useState, useEffect } from "react";
 
-import { getUser } from "../../services/ChatService";
+import { getUser } from "../../services/UserService";
 import UserLayout from "../layouts/UserLayout";
+import ChatItem from "../chatItem/ChatItem";
 
-export default function Contact({ chatRoom, onlineUsersId, currentUser }) {
+export default function Contact({
+  chatRoom,
+  onlineUsersId,
+  currentUser,
+  key,
+  click,
+}) {
   const [contact, setContact] = useState();
 
   useEffect(() => {
@@ -13,11 +20,19 @@ export default function Contact({ chatRoom, onlineUsersId, currentUser }) {
 
     const fetchData = async () => {
       const res = await getUser(contactId);
+      console.log(res);
       setContact(res);
     };
 
     fetchData();
   }, [chatRoom, currentUser]);
 
-  return <UserLayout user={contact} onlineUsersId={onlineUsersId} />;
+  return (
+    <ChatItem
+      user={contact}
+      onlineUsersId={onlineUsersId}
+      key={key}
+      click={click}
+    />
+  );
 }

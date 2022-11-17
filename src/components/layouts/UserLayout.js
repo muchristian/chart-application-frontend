@@ -1,4 +1,5 @@
 export default function UserLayout({ user, onlineUsersId }) {
+  console.log(user);
   return (
     <div className="relative flex items-center">
       <div class="overflow-hidden relative w-10 h-10 bg-gray-100 rounded-full dark:bg-gray-600">
@@ -11,7 +12,7 @@ export default function UserLayout({ user, onlineUsersId }) {
           <path
             fill-rule="evenodd"
             d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-            clip-rule="evenodd"
+            clipRule="evenodd"
           ></path>
         </svg>
       </div>

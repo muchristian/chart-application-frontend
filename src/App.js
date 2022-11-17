@@ -13,7 +13,6 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <Header />
         <ErrorMessage />
         <Routes>
           <Route exact path="/register" element={<Register />} />

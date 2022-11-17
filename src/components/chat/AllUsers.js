@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { createChatRoom } from "../../services/ChatService";
 import Contact from "./Contact";
 import UserLayout from "../layouts/UserLayout";
+import ChatItem from "../chatItem/ChatItem";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -45,7 +46,9 @@ export default function AllUsers({
       senderId: currentUser.uid,
       receiverId: user.uid,
     };
+    console.log(currentUser.uid);
     const res = await createChatRoom(members);
+    console.log(res);
     setChatRooms((prev) => [...prev, res]);
     changeChat(res);
   };
@@ -58,22 +61,13 @@ export default function AllUsers({
         <h2 className="my-2 mb-2 ml-2 text-gray-900 dark:text-white">Chats</h2>
         <li>
           {chatRooms.map((chatRoom, index) => (
-            <div
+            <Contact
               key={index}
-              className={classNames(
-                index === selectedChat
-                  ? "bg-gray-100 dark:bg-gray-700"
-                  : "transition duration-150 ease-in-out cursor-pointer bg-white border-b border-gray-200 hover:bg-gray-100 dark:bg-gray-900 dark:border-gray-700 dark:hover:bg-gray-700",
-                "flex items-center px-3 py-2 text-sm "
-              )}
-              onClick={() => changeCurrentChat(index, chatRoom)}
-            >
-              <Contact
-                chatRoom={chatRoom}
-                onlineUsersId={onlineUsersId}
-                currentUser={currentUser}
-              />
-            </div>
+              chatRoom={chatRoom}
+              onlineUsersId={onlineUsersId}
+              currentUser={currentUser}
+              click={() => changeCurrentChat(index, chatRoom)}
+            />
           ))}
         </li>
         <h2 className="my-2 mb-2 ml-2 text-gray-900 dark:text-white">
@@ -81,13 +75,12 @@ export default function AllUsers({
         </h2>
         <li>
           {nonContacts.map((nonContact, index) => (
-            <div
+            <ChatItem
+              user={nonContact}
+              onlineUsersId={onlineUsersId}
               key={index}
-              className="flex items-center px-3 py-2 text-sm bg-white border-b border-gray-200 hover:bg-gray-100 dark:bg-gray-900 dark:border-gray-700 dark:hover:bg-gray-700 cursor-pointer"
-              onClick={() => handleNewChatRoom(nonContact)}
-            >
-              <UserLayout user={nonContact} onlineUsersId={onlineUsersId} />
-            </div>
+              click={() => handleNewChatRoom(nonContact)}
+            />
           ))}
         </li>
       </ul>

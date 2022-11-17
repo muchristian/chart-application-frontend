@@ -1,6 +1,7 @@
 import auth from "../config/firebase";
 import { io } from "socket.io-client";
 import instance from "./api";
+import TokenService from "./TokenService";
 
 const baseURL = "http://localhost:3001/api";
 
@@ -34,58 +35,48 @@ const createHeader = async () => {
   return payloadHeader;
 };
 
-export const getChatRooms = async (userId) => {
-  const header = await createHeader();
-
+export const getAllUsers = async () => {
   try {
-    const res = await instance.get(`${baseURL}/room/${userId}`, header);
+    const res = await instance.get(`${baseURL}/user`);
     return res.data;
   } catch (e) {
     console.error(e);
   }
 };
 
-export const getChatRoomOfUsers = async (firstUserId, secondUserId) => {
-  const header = await createHeader();
-
+export const getUser = async (userId) => {
   try {
-    const res = await instance.get(
-      `${baseURL}/room/${firstUserId}/${secondUserId}`,
-      header
-    );
+    const res = await instance.get(`${baseURL}/user/${userId}`);
     return res.data;
   } catch (e) {
     console.error(e);
   }
 };
 
-export const createChatRoom = async (members) => {
-  const header = await createHeader();
-
+export const createUser = async (user) => {
   try {
-    const res = await instance.post(`${baseURL}/room`, members, header);
+    const res = await instance.post(`${baseURL}/user/register`, user);
+    console.log(res);
     return res.data;
   } catch (e) {
     console.error(e);
   }
 };
 
-export const getMessagesOfChatRoom = async (chatRoomId) => {
-  const header = await createHeader();
-
+export const loginUser = async (user) => {
   try {
-    const res = await instance.get(`${baseURL}/message/${chatRoomId}`, header);
+    const res = await instance.post(`${baseURL}/user/login`, user);
+    console.log(res.data.token);
+    TokenService.setAccessToken(res.data.token);
     return res.data;
   } catch (e) {
     console.error(e);
   }
 };
 
-export const sendMessage = async (messageBody) => {
-  const header = await createHeader();
-
+export const getUsers = async (users) => {
   try {
-    const res = await instance.post(`${baseURL}/message`, messageBody, header);
+    const res = await instance.get(`${baseURL}/user/users`, users);
     return res.data;
   } catch (e) {
     console.error(e);

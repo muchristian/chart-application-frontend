@@ -30,6 +30,7 @@ module.exports = {
       "gray-300": "#d1d5db",
       "gray-200": "#e5e7eb",
       "gray-100": "#f3f4f6",
+      "gray-50": "#f9fafb",
       "sky-500": "#0ea5e9",
     },
     extend: {

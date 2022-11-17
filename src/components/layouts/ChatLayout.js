@@ -1,16 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 
 import {
-  getAllUsers,
   getChatRooms,
   initiateSocketConnection,
 } from "../../services/ChatService";
+import { getAllUsers } from "../../services/UserService";
 import { useAuth } from "../../contexts/AuthContext";
-
+import { Link } from "react-router-dom";
 import ChatRoom from "../chat/ChatRoom";
 import Welcome from "../chat/Welcome";
 import AllUsers from "../chat/AllUsers";
 import SearchUsers from "../chat/SearchUsers";
+import HomeLayout from "./HomeLayout";
+import ChatItem from "../chatItem/ChatItem";
+import Header from "../layouts/Header";
 
 export default function ChatLayout() {
   const [users, SetUsers] = useState([]);
@@ -31,26 +34,28 @@ export default function ChatLayout() {
   useEffect(() => {
     const getSocket = async () => {
       const res = await initiateSocketConnection();
+      console.log(res);
       socket.current = res;
-      socket.current.emit("addUser", currentUser.uid);
+      socket.current.emit("addUser", currentUser.id);
       socket.current.on("getUsers", (users) => {
+        console.log(users);
         const userId = users.map((u) => u[0]);
         setonlineUsersId(userId);
       });
     };
 
     getSocket();
-  }, [currentUser.uid]);
+  }, [currentUser.id]);
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await getChatRooms(currentUser.uid);
+      const res = await getChatRooms(currentUser.id);
       console.log(res);
       setChatRooms(res);
     };
 
     fetchData();
-  }, [currentUser.uid]);
+  }, [currentUser.id]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -88,14 +93,14 @@ export default function ChatLayout() {
         .includes(newSearchQuery.toLowerCase());
     });
 
-    const searchedUsersId = searchedUsers.map((u) => u.uid);
+    const searchedUsersId = searchedUsers.map((u) => u.id);
 
     // If there are initial contacts
     if (chatRooms.length !== 0) {
       chatRooms.forEach((chatRoom) => {
         // Check if searched user is a contact or not.
         const isUserContact = chatRoom.members.some(
-          (e) => e !== currentUser.uid && searchedUsersId.includes(e)
+          (e) => e !== currentUser.id && searchedUsersId.includes(e)
         );
         setIsContact(isUserContact);
 
@@ -109,22 +114,37 @@ export default function ChatLayout() {
   };
 
   return (
-    <div className="container mx-auto">
-      {users.length > 0 ? (
-        <div className="min-w-full bg-white border-x border-b border-gray-200 dark:bg-gray-900 dark:border-gray-700 rounded lg:grid lg:grid-cols-3">
-          <div className="bg-white border-r border-gray-200 dark:bg-gray-900 dark:border-gray-700 lg:col-span-1">
-            <SearchUsers handleSearch={handleSearch} />
-
-            <AllUsers
-              users={searchQuery !== "" ? filteredUsers : users}
-              chatRooms={searchQuery !== "" ? filteredRooms : chatRooms}
-              setChatRooms={setChatRooms}
-              onlineUsersId={onlineUsersId}
-              currentUser={currentUser}
-              changeChat={handleChatChange}
-            />
+    <HomeLayout>
+      <>
+        <div className="flex h-full flex-col bg-white w-64 dark:bg-navy-750">
+          <div className="flex w-full items-center justify-between pl-4 pr-1 h-16">
+            {currentUser && (
+              <Link to="/" className="flex">
+                <span className="self-center text-lg font-semibold whitespace-nowrap text-gray-900 dark:text-white">
+                  WeTalk
+                </span>
+              </Link>
+            )}
           </div>
+          <SearchUsers handleSearch={handleSearch} />
 
+          <div className="flex flex-col">
+            {users && users.length > 0 ? (
+              <AllUsers
+                users={searchQuery !== "" ? filteredUsers : users}
+                chatRooms={searchQuery !== "" ? filteredRooms : chatRooms}
+                setChatRooms={setChatRooms}
+                onlineUsersId={onlineUsersId}
+                currentUser={currentUser}
+                changeChat={handleChatChange}
+              />
+            ) : (
+              <p>loading...</p>
+            )}
+          </div>
+        </div>
+        <div className="flex-1 flex flex-col">
+          <Header />
           {currentChat ? (
             <ChatRoom
               currentChat={currentChat}
@@ -135,9 +155,7 @@ export default function ChatLayout() {
             <Welcome />
           )}
         </div>
-      ) : (
-        <p>loading...</p>
-      )}
-    </div>
+      </>
+    </HomeLayout>
   );
 }
